@@ -1546,7 +1546,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
 
   autoGenerateNoteTitle: readBoolean("autoGenerateNoteTitle", true),
   useCleanupModel: readBoolean("useCleanupModel", true),
-  useDictationAgent: readBoolean("useDictationAgent", true),
+  // Dictation-only app: the voice assistant is hidden, so the dictation agent
+  // (wake-word "Hey <agent>" routing + selection edits) defaults off.
+  useDictationAgent: readBoolean("useDictationAgent", false),
   cleanupModel: readString("cleanupModel", ""),
   cleanupProvider: readString("cleanupProvider", "openai"),
 
