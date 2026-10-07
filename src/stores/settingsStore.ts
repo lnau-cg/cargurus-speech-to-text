@@ -5,6 +5,7 @@ import { ensureAgentNameInDictionary } from "../utils/agentName";
 import { chooseDictionaryStartupAction } from "../helpers/dictionaryStartup";
 import logger from "../utils/logger";
 import whisperVadConstants from "../constants/whisperVad.json";
+import defaultCustomDictionary from "../config/defaultCustomDictionary.json";
 import type {
   ChineseScriptPreference,
   LocalTranscriptionProvider,
@@ -3573,6 +3574,33 @@ export async function initializeSettings(): Promise<void> {
     } catch (err) {
       logger.warn(
         "Failed to sync dictionary on startup",
+        { error: (err as Error).message },
+        "settings"
+      );
+    }
+
+    // One-time seed of the bundled CarGurus dictionary so the terms are visible
+    // in the Dictionary UI (and the STT prompt) without the user typing them.
+    // Runs after the SQLite sync above so state reflects the authoritative list,
+    // and is gated by a flag so a user who later removes a seeded term doesn't
+    // get it re-added on the next launch. updateCustomDictionary de-dupes
+    // case-insensitively and writes through to SQLite + localStorage.
+    try {
+      if (isBrowser && dictionarySyncSucceeded && !localStorage.getItem("defaultDictionarySeeded")) {
+        const existing = new Set(
+          useSettingsStore.getState().customDictionary.map((w) => w.toLowerCase())
+        );
+        const toAdd = (defaultCustomDictionary as string[]).filter(
+          (w) => !existing.has(w.toLowerCase())
+        );
+        if (toAdd.length > 0) {
+          useSettingsStore.getState().updateCustomDictionary({ add: toAdd });
+        }
+        localStorage.setItem("defaultDictionarySeeded", "1");
+      }
+    } catch (err) {
+      logger.warn(
+        "Failed to seed default dictionary",
         { error: (err as Error).message },
         "settings"
       );
