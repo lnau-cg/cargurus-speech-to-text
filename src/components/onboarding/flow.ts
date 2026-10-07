@@ -112,6 +112,8 @@ export interface OnboardingRouteContext {
 // Dictation first, then Notes (the meeting recorder and its calendar
 // connections), then the assistant: the assistant demo suggests meeting times
 // from whatever calendar the Notes step connected.
+// Dictation-only app: the Notes step (meeting recorder + calendar connections)
+// and the Voice Assistant steps are removed from onboarding.
 const ACCOUNT_ROUTE: OnboardingStepId[] = [
   "auth",
   "permissions",
@@ -119,12 +121,11 @@ const ACCOUNT_ROUTE: OnboardingStepId[] = [
   "use-cases",
   "dictation-hotkey",
   "dictation-demo",
-  "notes",
 ];
 
 const SETUP_ROUTES: Record<Exclude<OnboardingSetupMode, null | "cloud">, OnboardingStepId[]> = {
-  byok: ["byok-dictation", "byok-assistant"],
-  local: ["local-dictation", "local-assistant"],
+  byok: ["byok-dictation"],
+  local: ["local-dictation"],
 };
 
 // Canonical flow order, independent of any one route. reconcileStepWithRoute uses
@@ -138,14 +139,9 @@ const STEP_ORDER: OnboardingStepId[] = [
   "dictation-hotkey",
   "activation-mode",
   "dictation-demo",
-  "notes",
-  "assistant-hotkey",
-  "assistant-demo",
   "setup-choice",
   "byok-dictation",
-  "byok-assistant",
   "local-dictation",
-  "local-assistant",
 ];
 
 const KNOWN_STEPS = new Set<OnboardingStepId>(STEP_ORDER);
@@ -175,8 +171,6 @@ const LEGACY_STEP_MAP: OnboardingStepId[] = [
   "permissions",
   "permissions",
   "dictation-hotkey",
-  "assistant-hotkey",
-  "notes",
   "setup-choice",
 ];
 
@@ -238,13 +232,7 @@ export function getOnboardingRoute(context: OnboardingRouteContext): OnboardingS
         // these steps shipped users who neither granted the mic nor knew their
         // trigger key.
         (["auth", "permissions", "dictation-hotkey", "setup-choice"] as OnboardingStepId[])
-      : [
-          ...ACCOUNT_ROUTE,
-          ...(context.agentAllowed
-            ? (["assistant-hotkey", "assistant-demo"] as OnboardingStepId[])
-            : []),
-          ...setupChoice,
-        ];
+      : [...ACCOUNT_ROUTE, ...setupChoice];
 
   if (context.requiredModelsPending && context.authPath === "account") {
     route.splice(route.indexOf("auth") + 1, 0, "required-models");

@@ -728,10 +728,14 @@ function initializeDeferredManagers() {
     });
   }
 
-  googleCalendarManager.start();
-  microsoftCalendarManager.start();
-  appleCalendarManager.start();
-  meetingDetectionEngine.start();
+  // Dictation-only app: calendar sync and meeting detection are not started, so
+  // no calendar polling or background meeting-detection prompts run. The managers
+  // are still constructed above (and their IPC handlers remain) so the feature
+  // can be re-enabled by restoring these .start() calls.
+  // googleCalendarManager.start();
+  // microsoftCalendarManager.start();
+  // appleCalendarManager.start();
+  // meetingDetectionEngine.start();
 }
 
 app.on("open-url", (event, url) => {
