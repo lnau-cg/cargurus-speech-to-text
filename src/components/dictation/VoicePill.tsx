@@ -2,7 +2,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 import { ChevronUp } from "../icons";
 import { cn } from "../lib/utils";
 import { PillWaveform } from "./PillWaveform";
-import { VoiceIdentityIcon } from "./VoiceIdentityIcon";
+import { CgVoiceIcon, CG_VOICE_GRADIENT } from "./CgVoiceIcon";
 import { RESTING_WAVE_SILHOUETTE, WAVEFORM_BAR_COUNT } from "./waveformMath";
 import {
   VOICE_PILL_FOOTPRINT,
@@ -92,7 +92,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
   // The hidden divider's margins are what carry the compact pill's 6px
   // icon↔waveform gap; a visible divider keeps 4px flanking its 1px rule.
   const dividerMargin = showCompactPill ? (showDivider ? 4 : COMPACT_CONTENT_GAP_PX / 2) : 0;
-  const identitySize = 22;
+  const identitySize = 36;
   const floatingHover = !isPanel && state === "hover";
   const footprint = showCompactPill ? VOICE_PILL_FOOTPRINT.recording : VOICE_PILL_FOOTPRINT.idle;
 
@@ -133,6 +133,14 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
         style={{ opacity: state === "hover" ? 0.72 : 0 }}
       />
 
+      {/* The brand gradient floods the whole pill while listening — the icon's
+          own gradient square fades (backgroundVisible below) so it reads as the
+          gradient expanding out of the icon to fill the control. */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out"
+        style={{ background: CG_VOICE_GRADIENT, opacity: isRecording ? 1 : 0 }}
+      />
+
       <span
         className="voice-pill-identity-slot relative inline-block shrink-0 transition-[width,height] duration-200"
         style={{ width: identitySize, height: identitySize }}
@@ -144,12 +152,11 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
             showExpandChevron ? "translate-y-1 scale-75 opacity-0" : "scale-100 opacity-100"
           )}
         >
-          <VoiceIdentityIcon
+          <CgVoiceIcon
             size={identitySize}
-            agentMode={agentMode}
+            backgroundVisible={!isRecording}
             className={cn(
               "transition-[width,height] duration-200",
-              state === "idle" && "text-foreground",
               (isUnavailable || isProcessing) && "animate-pulse"
             )}
           />
@@ -176,7 +183,10 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       />
 
       <div
-        className="voice-pill-waveform relative shrink-0 overflow-hidden text-foreground"
+        className={cn(
+          "voice-pill-waveform relative shrink-0 overflow-hidden",
+          isRecording ? "text-white" : "text-foreground"
+        )}
         style={{
           width: showCompactPill ? 52 : 0,
           height: showCompactPill ? 24 : 32,

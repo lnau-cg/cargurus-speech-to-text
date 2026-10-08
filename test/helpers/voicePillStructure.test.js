@@ -161,14 +161,14 @@ test("the collapsed Live Transcript pill transitions its logo into an expand che
   );
 });
 
-test("the idle pill keeps the logo at normal foreground strength", async () => {
+test("the idle pill shows the CG mark on its brand gradient", async () => {
   const idle = await renderPill("idle", false);
 
   assert.match(idle, /border-border-hover[^"\n]*dark:border-border\/50/);
-  assert.match(
-    idle,
-    /voice-identity-icon relative inline-block shrink-0 transition-\[width,height\] duration-200 text-foreground/
-  );
+  // The white CG mark sits on a full circle of the brand gradient, visible at rest.
+  assert.match(idle, /rounded-full/);
+  assert.match(idle, /<img[^>]*alt=""/);
+  assert.match(idle, /linear-gradient\(135deg/);
 });
 
 test("the floating hover pill changes surface treatment without zooming", async () => {
@@ -179,7 +179,7 @@ test("the floating hover pill changes surface treatment without zooming", async 
   assert.match(hovered, /box-shadow:var\(--shadow-card-hover-subtle\)/);
   assert.doesNotMatch(hovered, /style="[^"]*transform:/);
   assert.match(hovered, footprint.idle);
-  assert.match(hovered, /<svg width="22" height="22"/);
+  assert.match(hovered, /width:36px;height:36px/);
 });
 
 test("the waveform pill keeps the normal compact logo footprint", async () => {
@@ -191,7 +191,7 @@ test("the waveform pill keeps the normal compact logo footprint", async () => {
   });
 
   for (const markup of [idle, recording, liveTranscript]) {
-    assert.match(markup, /<svg width="22" height="22"/);
+    assert.match(markup, /width:36px;height:36px/);
   }
 });
 
@@ -205,12 +205,14 @@ test("an interactive voice pill is keyboard focusable", async () => {
   assert.match(interactive, /tabindex="0"/);
 });
 
-test("the waveform uses foreground contrast, rounded caps, and a pronounced height range", async () => {
+test("the waveform uses white contrast on the gradient, rounded caps, and a pronounced height range", async () => {
   const recording = await renderPill("recording", true);
   const { WAVEFORM_BAR_MIN_PX, WAVEFORM_BAR_MAX_PX, resolveWaveformBarHeight } =
     await import("../../src/components/dictation/waveformMath.ts");
 
-  assert.match(recording, /relative shrink-0 overflow-hidden text-foreground/);
+  // While listening the brand gradient floods the pill, so the live waveform
+  // switches to white for contrast.
+  assert.match(recording, /relative shrink-0 overflow-hidden text-white/);
   assert.equal(
     (recording.match(/w-0\.5 rounded-full bg-current/g) || []).length,
     await totalWaveBars()
@@ -234,15 +236,13 @@ test("Live Transcript hands visual border ownership to the shared panel", async 
   assert.doesNotMatch(standalone, /data-integrated-with-panel/);
 });
 
-test("Agent Mode uses the supplied mark, a purple perimeter glow, and a neutral waveform", async () => {
+test("Agent Mode keeps the purple perimeter glow and a neutral waveform", async () => {
   const agentRecording = await renderPill("recording", true, "right", {
     agentMode: true,
   });
   const normalRecording = await renderPill("recording", true);
-  const { AGENT_MODE_PATH } = await import("../../src/components/dictation/voiceIdentityMorph.ts");
   const styles = readDictationStyles();
 
-  assert.match(AGENT_MODE_PATH, /^M6\.14226 /);
   assert.match(styles, /--color-agent-brand:/);
   assert.doesNotMatch(styles, /\.voice-pill-control\[data-agent-mode="true"\]\s*\{/);
   // The agent glow is the same Signal treatment re-palettes to the agent's
@@ -255,8 +255,6 @@ test("Agent Mode uses the supplied mark, a purple perimeter glow, and a neutral 
   assert.match(agentRecording, /class="processing-signal-glow" data-agent="true"/);
   assert.doesNotMatch(agentRecording, /data-active/);
   assert.match(agentRecording, /data-agent-mode="true"/);
-  assert.match(agentRecording, /voice-identity-final-agent/);
-  assert.ok(agentRecording.includes(`d="${AGENT_MODE_PATH}"`));
   assert.doesNotMatch(agentRecording, /agent-waveform-background|text-agent-brand/);
   assert.equal(
     (agentRecording.match(/w-0\.5 rounded-full bg-current/g) || []).length,
@@ -278,34 +276,10 @@ test("Agent thinking keeps the purple glow on the same persistent pill root", as
   assert.match(agentThinking, /data-agent-beam-active="true"/);
 });
 
-test("the stable identity box stages the sound-bars into the Agent mark", async () => {
-  const idle = await renderPill("idle", false);
+test("Agent thinking keeps data-agent-mode on the pill root", async () => {
   const agentThinking = await renderPill("thinking", false, "right", {
     agentMode: true,
   });
 
-  assert.match(idle, /data-agent-mode="false"/);
-  assert.match(idle, /voice-identity-morph-shell/);
-  assert.match(idle, /voice-identity-morph-bar-left/);
-  assert.match(idle, /voice-identity-morph-bar-center/);
-  assert.match(idle, /voice-identity-morph-bar-right/);
   assert.match(agentThinking, /data-agent-mode="true"/);
-  assert.match(agentThinking, /voice-identity-final-agent/);
-});
-
-test("the voice identity performs an actual SVG geometry morph", async () => {
-  const { resolveVoiceIdentityMorphPaths } =
-    await import("../../src/components/dictation/voiceIdentityMorph.ts");
-  const listening = resolveVoiceIdentityMorphPaths(0);
-  const midpoint = resolveVoiceIdentityMorphPaths(0.5);
-  const agent = resolveVoiceIdentityMorphPaths(1);
-
-  assert.notEqual(listening.shell, midpoint.shell);
-  assert.notEqual(midpoint.shell, agent.shell);
-  assert.notEqual(listening.centerBar, midpoint.centerBar);
-  assert.notEqual(midpoint.centerBar, agent.centerBar);
-  assert.equal(listening.agentOpacity, 0);
-  assert.ok(midpoint.sparkOpacity > 0);
-  assert.equal(agent.agentOpacity, 1);
-  assert.equal(agent.constructionOpacity, 0);
 });
