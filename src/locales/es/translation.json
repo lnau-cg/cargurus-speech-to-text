@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" ya está registrada por otra aplicación.",
       "osReserved": "\"{{hotkey}}\" puede estar reservada por tu entorno de escritorio.",
       "rightModifierNeedsListener": "\"{{hotkey}}\" no se puede usar en este escritorio, cuyos atajos necesitan una tecla normal. Añade una tecla, como Control+Alt+Space.",
+      "dictationAutoEnterNeedsRegularKey": "Dictado con Enter automático no admite botones del ratón ni combinaciones de solo modificador como Control+Super. Usa en su lugar una tecla normal (p. ej., Control+Alt+Space), Globo o una tecla derecha como Opción derecha.",
       "holdNeedsReleaseKey": "Mantener para hablar necesita una tecla cuya liberación macOS pueda detectar: Globo, una tecla derecha como Opción derecha o un atajo con modificador. Pulsar funciona con cualquier tecla.",
       "holdNeedsRegularKey": "Para usar Mantener, añade una tecla normal al atajo, como Control+Alt+Space. Tu escritorio no puede detectar cuándo mantienes pulsadas solo teclas modificadoras.",
       "holdNeedsGnomePortal": "Para usar Mantener, GNOME necesita su portal de atajos globales, incluido desde GNOME 48. Pulsar funciona sin él.",
@@ -2033,8 +2034,11 @@
         "autoPasteDescription": "Pegar automáticamente el texto transcrito en la aplicación activa al finalizar el dictado",
         "keepInClipboard": "Mantener transcripción en el portapapeles",
         "keepInClipboardDescription": "Mantener el texto dictado en el portapapeles para poder pegarlo manualmente si es necesario",
-        "enterCommand": "Comando de voz para pulsar Intro",
-        "enterCommandDescription": "Di esta frase al final de un dictado para pulsar Intro en lugar de pegar la frase",
+        "enterCommand": "Pulsar Intro después del dictado",
+        "enterCommandDescription": "Elige cuándo el dictado debe pulsar Intro en el campo enfocado en lugar de pegar el texto",
+        "enterCommandModeOff": "Desactivado",
+        "enterCommandModePhrase": "Frase desencadenante",
+        "enterCommandModeAlways": "Siempre",
         "enterCommandPhrase": "Frase desencadenante",
         "enterCommandPhraseDescription": "Qué decir para activar Intro, por ejemplo \"pulsar intro\""
       },
@@ -2185,6 +2189,10 @@
       "translationHotkey": {
         "title": "Atajo de Traducción",
         "description": "Dicta en cualquier idioma: el texto pegado sale traducido"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "Atajo de Entrar Automático",
+        "description": "Dicta con este atajo y se presiona Entrar automáticamente después de pegar"
       }
     },
     "permissions": {

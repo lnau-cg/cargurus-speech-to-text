@@ -25,6 +25,7 @@ export default class FakeAudioManager {
   setVoiceAgentRequested() {}
   setAssistantSelectionContext() {}
   setTranslationRequested() {}
+  setDictationAutoEnterRequested() {}
   startRecording() {
     globalThis.__forceStopStarts += 1;
     return Promise.resolve(true);

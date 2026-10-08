@@ -11577,6 +11577,42 @@ class IPCHandlers {
       return this.environmentManager.getVoiceAgentKey?.() || "";
     });
 
+    ipcMain.handle("update-dictation-auto-enter-hotkey", async (_event, hotkey) => {
+      const hotkeyManager = this.windowManager.hotkeyManager;
+      const dictationAutoEnterCallback = this.windowManager._dictationAutoEnterHotkeyCallback;
+      if (!dictationAutoEnterCallback) {
+        return { success: false };
+      }
+
+      if (!hotkey) {
+        const removed = await hotkeyManager.unregisterSlot("dictationAutoEnter");
+        if (removed === false) return { success: false };
+        this.environmentManager.saveDictationAutoEnterKey?.("");
+        this.windowManager.reconcileNativeKeyListeners();
+        this._notifyHotkeyChanged("");
+        return { success: true, message: "Auto-enter dictation hotkey cleared" };
+      }
+
+      const result = await hotkeyManager.registerSlot(
+        "dictationAutoEnter",
+        hotkey,
+        dictationAutoEnterCallback,
+        { atomic: true }
+      );
+      this.windowManager.reconcileNativeKeyListeners();
+      if (result.success) {
+        this.environmentManager.saveDictationAutoEnterKey?.(hotkey);
+        this._notifyHotkeyChanged(hotkey);
+        return { success: true, message: `Auto-enter dictation hotkey updated to: ${hotkey}` };
+      }
+
+      return { success: false, message: result.error };
+    });
+
+    ipcMain.handle("get-dictation-auto-enter-key", async () => {
+      return this.environmentManager.getDictationAutoEnterKey?.() || "";
+    });
+
     ipcMain.handle("update-translation-hotkey", async (_event, hotkey) => {
       const hotkeyManager = this.windowManager.hotkeyManager;
       const translationCallback = this.windowManager._translationHotkeyCallback;

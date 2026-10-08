@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" is already registered by another application.",
       "osReserved": "\"{{hotkey}}\" may be reserved by your desktop environment.",
       "rightModifierNeedsListener": "\"{{hotkey}}\" can't be used on this desktop, whose shortcuts need a regular key. Add a key, such as Control+Alt+Space.",
+      "dictationAutoEnterNeedsRegularKey": "Auto-Enter Dictation doesn't support mouse buttons or modifier-only combinations like Control+Super. Use a regular key (e.g. Control+Alt+Space), Globe, or a right-side modifier like Right Option instead.",
       "holdNeedsReleaseKey": "Hold-to-talk needs a key macOS can see you release: Globe, a right-side key like Right Option, or a shortcut with a modifier. Tap works with any key.",
       "holdNeedsRegularKey": "To use Hold, add a regular key to the shortcut, such as Control+Alt+Space. Your desktop can't report holding modifier keys alone.",
       "holdNeedsGnomePortal": "To use Hold, GNOME needs its global shortcuts portal, which comes with GNOME 48 and newer. Tap works without it.",
@@ -2275,8 +2276,11 @@
         "autoPasteDescription": "Automatically paste transcribed text into the active app when dictation finishes",
         "keepInClipboard": "Keep transcription in clipboard",
         "keepInClipboardDescription": "Keep dictated text in your clipboard so you can paste it manually if needed",
-        "enterCommand": "Voice command to press Enter",
-        "enterCommandDescription": "Say this phrase at the end of a dictation to press Enter instead of pasting the phrase",
+        "enterCommand": "Press Enter after dictation",
+        "enterCommandDescription": "Choose when dictation should press Enter on the focused field instead of pasting the text",
+        "enterCommandModeOff": "Off",
+        "enterCommandModePhrase": "Trigger phrase",
+        "enterCommandModeAlways": "Always",
         "enterCommandPhrase": "Trigger phrase",
         "enterCommandPhraseDescription": "What to say to trigger Enter, e.g. \"hit enter\""
       },
@@ -2427,6 +2431,10 @@
       "translationHotkey": {
         "title": "Translation Hotkey",
         "description": "Dictate in any language — the pasted text comes out translated"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "Auto-Enter Dictation Hotkey",
+        "description": "Dictate with this hotkey and Enter is pressed automatically after pasting"
       }
     },
     "permissions": {

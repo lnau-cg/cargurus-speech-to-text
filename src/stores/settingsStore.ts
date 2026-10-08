@@ -298,7 +298,6 @@ const BOOLEAN_SETTINGS = new Set([
   "isSignedIn",
   "autoPasteEnabled",
   "keepTranscriptionInClipboard",
-  "dictationEnterCommandEnabled",
   "dataRetentionEnabled",
   "saveDiscardedTranscriptions",
   "noteFilesEnabled",
@@ -921,7 +920,7 @@ export interface SettingsState
   showTranscriptionPreview: boolean;
   autoPasteEnabled: boolean;
   keepTranscriptionInClipboard: boolean;
-  dictationEnterCommandEnabled: boolean;
+  dictationEnterCommandMode: "off" | "phrase" | "always";
   dictationEnterCommandPhrase: string;
   noteFilesEnabled: boolean;
   noteFilesPath: string;
@@ -1193,6 +1192,8 @@ export interface SettingsState
   setVoiceAgentKey: (key: string) => Promise<HotkeyRegistrationResult>;
   translationKey: string;
   setTranslationKey: (key: string) => Promise<HotkeyRegistrationResult>;
+  dictationAutoEnterKey: string;
+  setDictationAutoEnterKey: (key: string) => Promise<HotkeyRegistrationResult>;
   setMeetingHotkeyLayoutMode: (mode: "side-panel" | "full-width") => void;
   setOnboardingUseCases: (useCases: string[]) => void;
   setOnboardingUseCaseNote: (note: string) => void;
@@ -1241,7 +1242,7 @@ export interface SettingsState
   setShowTranscriptionPreview: (value: boolean) => void;
   setAutoPasteEnabled: (value: boolean) => void;
   setKeepTranscriptionInClipboard: (value: boolean) => void;
-  setDictationEnterCommandEnabled: (value: boolean) => void;
+  setDictationEnterCommandMode: (mode: "off" | "phrase" | "always") => void;
   setDictationEnterCommandPhrase: (value: string) => void;
   setNoteFilesEnabled: (value: boolean) => void;
   setNoteFilesPath: (value: string) => void;
@@ -1316,7 +1317,7 @@ function createNumberSetter(key: string) {
 // being persisted. Rolls back to the previous key if registration fails.
 // Resolves to false on failure so optimistic UIs (HotkeyListInput) can revert.
 function createRegisteredHotkeySetter(
-  key: "voiceAgentKey" | "translationKey",
+  key: "voiceAgentKey" | "translationKey" | "dictationAutoEnterKey",
   label: string,
   getRegisterFn: () => ((hotkey: string) => Promise<HotkeyRegistrationResult>) | undefined,
   fallbackSave?: (hotkey: string) => void
@@ -1606,6 +1607,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   meetingKey: readString("meetingKey", ""),
   voiceAgentKey: readString("voiceAgentKey", ""),
   translationKey: readString("translationKey", ""),
+  dictationAutoEnterKey: readString("dictationAutoEnterKey", ""),
   onboardingUseCases: readStringArray("onboardingUseCases", []),
   onboardingUseCaseNote: readString("onboardingUseCaseNote", ""),
   spokenLanguages: readStringArray("spokenLanguages", []),
@@ -1712,7 +1714,12 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   showTranscriptionPreview: readBoolean("showTranscriptionPreview", false),
   autoPasteEnabled: readBoolean("autoPasteEnabled", true),
   keepTranscriptionInClipboard: readBoolean("keepTranscriptionInClipboard", false),
-  dictationEnterCommandEnabled: readBoolean("dictationEnterCommandEnabled", false),
+  dictationEnterCommandMode: (() => {
+    const v = readString("dictationEnterCommandMode", "off");
+    if (v === "off" || v === "phrase" || v === "always") return v;
+    // Pre-existing installs only ever had the boolean toggle; honor it once.
+    return readBoolean("dictationEnterCommandEnabled", false) ? "phrase" : "off";
+  })(),
   dictationEnterCommandPhrase: readString("dictationEnterCommandPhrase", "hit enter"),
   noteFilesEnabled: readBoolean("noteFilesEnabled", false),
   noteFilesPath: readString("noteFilesPath", ""),
@@ -2338,6 +2345,11 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
     "translation hotkey",
     () => window.electronAPI?.updateTranslationHotkey
   ),
+  setDictationAutoEnterKey: createRegisteredHotkeySetter(
+    "dictationAutoEnterKey",
+    "auto-enter dictation hotkey",
+    () => window.electronAPI?.updateDictationAutoEnterHotkey
+  ),
 
   setMeetingHotkeyLayoutMode: (mode: "side-panel" | "full-width") => {
     if (isBrowser) localStorage.setItem("meetingHotkeyLayoutMode", mode);
@@ -2562,7 +2574,10 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   setShowTranscriptionPreview: createBooleanSetter("showTranscriptionPreview"),
   setAutoPasteEnabled: createBooleanSetter("autoPasteEnabled"),
   setKeepTranscriptionInClipboard: createBooleanSetter("keepTranscriptionInClipboard"),
-  setDictationEnterCommandEnabled: createBooleanSetter("dictationEnterCommandEnabled"),
+  setDictationEnterCommandMode: (mode: "off" | "phrase" | "always") => {
+    if (isBrowser) localStorage.setItem("dictationEnterCommandMode", mode);
+    set({ dictationEnterCommandMode: mode });
+  },
   setDictationEnterCommandPhrase: createStringSetter("dictationEnterCommandPhrase"),
   setNoteFilesEnabled: createBooleanSetter("noteFilesEnabled"),
   setNoteFilesPath: createStringSetter("noteFilesPath"),
@@ -3522,6 +3537,20 @@ export async function initializeSettings(): Promise<void> {
     } catch (err) {
       logger.warn(
         "Failed to sync translation hotkey on startup",
+        { error: (err as Error).message },
+        "settings"
+      );
+    }
+
+    // Sync auto-enter dictation hotkey from main process
+    try {
+      const envKey = await window.electronAPI.getDictationAutoEnterKey?.();
+      if (envKey && envKey !== state.dictationAutoEnterKey) {
+        createStringSetter("dictationAutoEnterKey")(envKey);
+      }
+    } catch (err) {
+      logger.warn(
+        "Failed to sync auto-enter dictation hotkey on startup",
         { error: (err as Error).message },
         "settings"
       );

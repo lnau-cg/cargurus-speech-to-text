@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" 已被其他应用注册。",
       "osReserved": "\"{{hotkey}}\" 可能被系统保留。",
       "rightModifierNeedsListener": "\"{{hotkey}}\" 无法在此桌面上使用，其快捷键需要包含一个普通按键。请添加一个按键，例如 Control+Alt+Space。",
+      "dictationAutoEnterNeedsRegularKey": "自动发送 Enter 的听写不支持鼠标按钮或仅修饰键组合（如 Control+Super）。请改用普通按键（例如 Control+Alt+Space）、Globe 或右侧修饰键（如右侧 Option）。",
       "holdNeedsReleaseKey": "按住说话需要 macOS 能检测到松开的按键：Globe、右侧 Option 之类的右侧按键，或带修饰键的快捷键。点按可用于任何按键。",
       "holdNeedsRegularKey": "要使用按住模式，请在快捷键中添加一个普通按键，例如 Control+Alt+Space。桌面环境无法检测仅按住修饰键的操作。",
       "holdNeedsGnomePortal": "要使用按住模式，GNOME 需要全局快捷键门户（GNOME 48 及更高版本自带）。点按无需该门户。",
@@ -1980,8 +1981,11 @@
         "autoPasteDescription": "听写结束后自动将转录文本粘贴到当前活动的应用中",
         "keepInClipboard": "将转录内容保留在剪贴板",
         "keepInClipboardDescription": "将听写文本保留在剪贴板中，以便在需要时手动粘贴",
-        "enterCommand": "按下回车键的语音命令",
-        "enterCommandDescription": "在听写结尾说出此短语，将按下回车键而不是粘贴该短语",
+        "enterCommand": "听写后按下回车键",
+        "enterCommandDescription": "选择听写在何时按下回车键，而不是粘贴文本",
+        "enterCommandModeOff": "关闭",
+        "enterCommandModePhrase": "触发短语",
+        "enterCommandModeAlways": "始终",
         "enterCommandPhrase": "触发短语",
         "enterCommandPhraseDescription": "触发回车键要说的话，例如“按回车”"
       },
@@ -2132,6 +2136,10 @@
       "translationHotkey": {
         "title": "翻译快捷键",
         "description": "用任何语言听写——粘贴的文本会自动翻译"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "自动回车听写快捷键",
+        "description": "使用此快捷键听写，粘贴后会自动按下回车键"
       }
     },
     "permissions": {

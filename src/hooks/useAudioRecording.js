@@ -71,6 +71,7 @@ export const useAudioRecording = (toast, options = {}) => {
   const lastStartOptionsRef = useRef({
     voiceAgentRequested: false,
     translationRequested: false,
+    dictationAutoEnterRequested: false,
   });
   const {
     onToggle,
@@ -132,9 +133,17 @@ export const useAudioRecording = (toast, options = {}) => {
   }, []);
 
   const performStartRecording = useCallback(
-    async ({ voiceAgentRequested = false, translationRequested = false } = {}) => {
+    async ({
+      voiceAgentRequested = false,
+      translationRequested = false,
+      dictationAutoEnterRequested = false,
+    } = {}) => {
       if (startLockRef.current) return false;
-      lastStartOptionsRef.current = { voiceAgentRequested, translationRequested };
+      lastStartOptionsRef.current = {
+        voiceAgentRequested,
+        translationRequested,
+        dictationAutoEnterRequested,
+      };
       startLockRef.current = true;
       stopRequestedDuringStartRef.current = false;
       pushForceStoppedRef.current = false;
@@ -185,6 +194,7 @@ export const useAudioRecording = (toast, options = {}) => {
         audioManagerRef.current.setVoiceAgentRequested(voiceAgentRequested);
         audioManagerRef.current.setAssistantSelectionContext(assistantSelectionContext);
         audioManagerRef.current.setTranslationRequested(translationRequested);
+        audioManagerRef.current.setDictationAutoEnterRequested(dictationAutoEnterRequested);
         // Covers the toggle path with freshly-set flags; the signature dedup
         // makes this a no-op when the prepare handler already reported the
         // same kind ahead of the flags being set.
@@ -639,18 +649,26 @@ export const useAudioRecording = (toast, options = {}) => {
             result.text = expandSnippets(result.text, getSettings().snippets);
           }
 
-          // A trailing "hit enter" (configurable) submits the focused field
-          // instead of pasting the phrase. Scoped to plain dictation: a selection
-          // edit replaces text in place (no field to submit) and an assistant
-          // command is routed to the panel, not pasted.
+          // Enter can be triggered three ways: a trailing "hit enter" (configurable
+          // phrase), an "always" mode that submits every dictation, or the dedicated
+          // auto-enter hotkey (which forces it regardless of the phrase/always
+          // setting). Scoped to plain dictation: a selection edit replaces text in
+          // place (no field to submit) and an assistant command is routed to the
+          // panel, not pasted.
           let sendEnterAfterPaste = false;
           if (!result.assistantConversation && !result.selectionEdit?.sessionId) {
-            const { dictationEnterCommandEnabled, dictationEnterCommandPhrase } = getSettings();
-            if (dictationEnterCommandEnabled) {
-              const stripped = stripDictationEnterCommand(result.text, dictationEnterCommandPhrase);
-              if (stripped.shouldPressEnter) {
-                result.text = stripped.text;
+            if (audioManagerRef.current?.dictationAutoEnterRequested) {
+              sendEnterAfterPaste = true;
+            } else {
+              const { dictationEnterCommandMode, dictationEnterCommandPhrase } = getSettings();
+              if (dictationEnterCommandMode === "always") {
                 sendEnterAfterPaste = true;
+              } else if (dictationEnterCommandMode === "phrase") {
+                const stripped = stripDictationEnterCommand(result.text, dictationEnterCommandPhrase);
+                if (stripped.shouldPressEnter) {
+                  result.text = stripped.text;
+                  sendEnterAfterPaste = true;
+                }
               }
             }
           }
@@ -985,6 +1003,7 @@ export const useAudioRecording = (toast, options = {}) => {
     const handleToggle = async ({
       voiceAgentRequested = false,
       translationRequested = false,
+      dictationAutoEnterRequested = false,
     } = {}) => {
       if (!audioManagerRef.current) return;
       const currentState = audioManagerRef.current.getState();
@@ -994,12 +1013,18 @@ export const useAudioRecording = (toast, options = {}) => {
       if (startLockRef.current || currentState.isRecording) {
         await performStopRecording();
       } else if (canStartDictation(currentState)) {
-        await performStartRecording({ voiceAgentRequested, translationRequested });
+        await performStartRecording({
+          voiceAgentRequested,
+          translationRequested,
+          dictationAutoEnterRequested,
+        });
       }
     };
 
-    const handleStart = async () => {
-      await performStartRecording();
+    const handleStart = async (options) => {
+      await performStartRecording({
+        dictationAutoEnterRequested: options?.dictationAutoEnterRequested ?? false,
+      });
     };
 
     const handleStop = async () => {
@@ -1021,8 +1046,15 @@ export const useAudioRecording = (toast, options = {}) => {
       onToggle?.();
     });
 
-    const disposeStart = window.electronAPI.onStartDictation?.(() => {
-      handleStart();
+    const disposeDictationAutoEnterToggle = window.electronAPI.onToggleDictationAutoEnter?.(
+      () => {
+        handleToggle({ dictationAutoEnterRequested: true });
+        onToggle?.();
+      }
+    );
+
+    const disposeStart = window.electronAPI.onStartDictation?.((options) => {
+      handleStart(options);
       onToggle?.();
     });
 
@@ -1068,6 +1100,7 @@ export const useAudioRecording = (toast, options = {}) => {
       disposeToggle?.();
       disposeVoiceAgentToggle?.();
       disposeTranslationToggle?.();
+      disposeDictationAutoEnterToggle?.();
       disposeStart?.();
       disposePrepare?.();
       disposeCancelPreparation?.();

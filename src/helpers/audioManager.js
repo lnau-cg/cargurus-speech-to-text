@@ -647,6 +647,7 @@ class AudioManager {
     this.streamingFallbackChunks = [];
     this.voiceAgentRequested = false;
     this.translationRequested = false;
+    this.dictationAutoEnterRequested = false;
     this.translationApplied = false;
     this.pendingSelectionEdit = null;
     this.pendingAssistantConversation = null;
@@ -910,6 +911,10 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
   setTranslationRequested(requested) {
     this.translationRequested = requested;
     this.translationApplied = false;
+  }
+
+  setDictationAutoEnterRequested(requested) {
+    this.dictationAutoEnterRequested = requested;
   }
 
   // In translation mode the STT hint is the configured source language, not

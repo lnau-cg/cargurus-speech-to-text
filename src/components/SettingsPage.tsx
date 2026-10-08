@@ -1214,8 +1214,8 @@ export default function SettingsPage({
     setAutoPasteEnabled,
     keepTranscriptionInClipboard,
     setKeepTranscriptionInClipboard,
-    dictationEnterCommandEnabled,
-    setDictationEnterCommandEnabled,
+    dictationEnterCommandMode,
+    setDictationEnterCommandMode,
     dictationEnterCommandPhrase,
     setDictationEnterCommandPhrase,
     floatingIconAutoHide,
@@ -1267,6 +1267,8 @@ export default function SettingsPage({
   const setVoiceAgentKey = useSettingsStore((s) => s.setVoiceAgentKey);
   const translationKey = useSettingsStore((s) => s.translationKey);
   const setTranslationKey = useSettingsStore((s) => s.setTranslationKey);
+  const dictationAutoEnterKey = useSettingsStore((s) => s.dictationAutoEnterKey);
+  const setDictationAutoEnterKey = useSettingsStore((s) => s.setDictationAutoEnterKey);
 
   const settingsPolicyState = usePolicySnapshot();
   const agentAllowedByPolicy = isAgentAllowed(settingsPolicyState);
@@ -1500,10 +1502,26 @@ export default function SettingsPage({
           "settingsPage.general.meetingHotkey.title": meetingKey,
           "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
           "settingsPage.general.translationHotkey.title": translationKey,
+          "settingsPage.general.dictationAutoEnterHotkey.title": dictationAutoEnterKey,
         },
         t
       ),
-    [meetingKey, voiceAgentKey, translationKey, t]
+    [meetingKey, voiceAgentKey, translationKey, dictationAutoEnterKey, t]
+  );
+
+  const validateDictationAutoEnterHotkey = useCallback(
+    (hotkey: string) =>
+      validateHotkeyForSlot(
+        hotkey,
+        {
+          "settingsPage.general.hotkey.title": dictationKey,
+          "settingsPage.general.meetingHotkey.title": meetingKey,
+          "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
+          "settingsPage.general.translationHotkey.title": translationKey,
+        },
+        t
+      ),
+    [dictationKey, meetingKey, voiceAgentKey, translationKey, t]
   );
 
   const validateMeetingHotkey = useCallback(
@@ -1514,10 +1532,11 @@ export default function SettingsPage({
           "settingsPage.general.hotkey.title": dictationKey,
           "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
           "settingsPage.general.translationHotkey.title": translationKey,
+          "settingsPage.general.dictationAutoEnterHotkey.title": dictationAutoEnterKey,
         },
         t
       ),
-    [dictationKey, voiceAgentKey, translationKey, t]
+    [dictationKey, voiceAgentKey, translationKey, dictationAutoEnterKey, t]
   );
 
   const validateVoiceAgentHotkey = useCallback(
@@ -1528,10 +1547,11 @@ export default function SettingsPage({
           "settingsPage.general.hotkey.title": dictationKey,
           "settingsPage.general.meetingHotkey.title": meetingKey,
           "settingsPage.general.translationHotkey.title": translationKey,
+          "settingsPage.general.dictationAutoEnterHotkey.title": dictationAutoEnterKey,
         },
         t
       ),
-    [dictationKey, meetingKey, translationKey, t]
+    [dictationKey, meetingKey, translationKey, dictationAutoEnterKey, t]
   );
 
   const validateTranslationHotkey = useCallback(
@@ -1542,10 +1562,11 @@ export default function SettingsPage({
           "settingsPage.general.hotkey.title": dictationKey,
           "settingsPage.general.meetingHotkey.title": meetingKey,
           "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
+          "settingsPage.general.dictationAutoEnterHotkey.title": dictationAutoEnterKey,
         },
         t
       ),
-    [dictationKey, meetingKey, voiceAgentKey, t]
+    [dictationKey, meetingKey, voiceAgentKey, dictationAutoEnterKey, t]
   );
 
   const {
@@ -2321,13 +2342,46 @@ export default function SettingsPage({
                     label={t("settingsPage.general.clipboard.enterCommand")}
                     description={t("settingsPage.general.clipboard.enterCommandDescription")}
                   >
-                    <Toggle
-                      checked={dictationEnterCommandEnabled}
-                      onChange={setDictationEnterCommandEnabled}
-                    />
+                    <div className="inline-flex items-center gap-px p-0.5 bg-muted/60 dark:bg-surface-2 rounded-md">
+                      {(
+                        [
+                          {
+                            value: "off",
+                            label: t("settingsPage.general.clipboard.enterCommandModeOff"),
+                          },
+                          {
+                            value: "phrase",
+                            label: t("settingsPage.general.clipboard.enterCommandModePhrase"),
+                          },
+                          {
+                            value: "always",
+                            label: t("settingsPage.general.clipboard.enterCommandModeAlways"),
+                          },
+                        ] as const
+                      ).map((option) => {
+                        const isSelected = dictationEnterCommandMode === option.value;
+                        return (
+                          <button
+                            key={option.value}
+                            onClick={() => setDictationEnterCommandMode(option.value)}
+                            className={`
+                              px-2.5 py-1 rounded-[5px] text-xs font-medium
+                              transition-colors duration-100
+                              ${
+                                isSelected
+                                  ? "bg-background dark:bg-surface-raised text-foreground shadow-sm"
+                                  : "text-muted-foreground hover:text-foreground"
+                              }
+                            `}
+                          >
+                            {option.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </SettingsRow>
                 </SettingsPanelRow>
-                {dictationEnterCommandEnabled && (
+                {dictationEnterCommandMode === "phrase" && (
                   <SettingsPanelRow>
                     <SettingsRow
                       label={t("settingsPage.general.clipboard.enterCommandPhrase")}
@@ -3196,6 +3250,26 @@ EOF`,
                       )}
                   </SettingsPanelRow>
                 )}
+              </SettingsPanel>
+            </div>
+
+            {/* Auto-Enter Dictation Hotkey */}
+            <div>
+              <SectionHeader
+                title={t("settingsPage.general.dictationAutoEnterHotkey.title")}
+                description={t("settingsPage.general.dictationAutoEnterHotkey.description")}
+              />
+              <SettingsPanel>
+                <SettingsPanelRow>
+                  <HotkeyListInput
+                    value={dictationAutoEnterKey}
+                    onChange={(list) => commitAgentHotkey(setDictationAutoEnterKey, list)}
+                    onClear={() => commitAgentHotkey(setDictationAutoEnterKey, "")}
+                    validate={validateDictationAutoEnterHotkey}
+                    disabled={isAgentHotkeyCommitting}
+                    maxHotkeys={1}
+                  />
+                </SettingsPanelRow>
               </SettingsPanel>
             </div>
 

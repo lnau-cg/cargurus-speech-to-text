@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" è già registrata da un'altra applicazione.",
       "osReserved": "\"{{hotkey}}\" potrebbe essere riservata dal sistema operativo.",
       "rightModifierNeedsListener": "\"{{hotkey}}\" non può essere usato su questo desktop, le cui scorciatoie richiedono un tasto normale. Aggiungi un tasto, ad esempio Control+Alt+Space.",
+      "dictationAutoEnterNeedsRegularKey": "La dettatura con Invio automatico non supporta i pulsanti del mouse né le combinazioni di soli modificatori come Control+Super. Usa invece un tasto normale (ad es. Control+Alt+Space), Globo o un tasto destro come Opzione destra.",
       "holdNeedsReleaseKey": "Tieni premuto per parlare richiede un tasto di cui macOS rilevi il rilascio: Globo, un tasto destro come Opzione destra o una scorciatoia con modificatore. Tocca funziona con qualsiasi tasto.",
       "holdNeedsRegularKey": "Per usare Tieni premuto, aggiungi un tasto normale alla scorciatoia, ad esempio Control+Alt+Space. Il desktop non può rilevare la pressione prolungata dei soli tasti modificatori.",
       "holdNeedsGnomePortal": "Per usare Tieni premuto, GNOME ha bisogno del portale delle scorciatoie globali, incluso da GNOME 48 in poi. Tocca funziona anche senza.",
@@ -1980,8 +1981,11 @@
         "autoPasteDescription": "Incolla automaticamente il testo trascritto nell'app attiva al termine della dettatura",
         "keepInClipboard": "Mantieni la trascrizione negli appunti",
         "keepInClipboardDescription": "Mantieni il testo dettato negli appunti per poterlo incollare manualmente se necessario",
-        "enterCommand": "Comando vocale per premere Invio",
-        "enterCommandDescription": "Pronuncia questa frase alla fine di una dettatura per premere Invio invece di incollare la frase",
+        "enterCommand": "Premere Invio dopo la dettatura",
+        "enterCommandDescription": "Scegli quando la dettatura deve premere Invio nel campo attivo invece di incollare il testo",
+        "enterCommandModeOff": "Disattivato",
+        "enterCommandModePhrase": "Frase di attivazione",
+        "enterCommandModeAlways": "Sempre",
         "enterCommandPhrase": "Frase di attivazione",
         "enterCommandPhraseDescription": "Cosa dire per attivare Invio, ad es. \"premi invio\""
       },
@@ -2132,6 +2136,10 @@
       "translationHotkey": {
         "title": "Hotkey Traduzione",
         "description": "Detta in qualsiasi lingua: il testo incollato esce tradotto"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "Hotkey Invio Automatico",
+        "description": "Detta con questo tasto di scelta rapida e Invio viene premuto automaticamente dopo l'inserimento"
       }
     },
     "permissions": {

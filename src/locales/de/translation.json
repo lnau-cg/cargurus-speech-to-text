@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" ist bereits von einer anderen Anwendung registriert.",
       "osReserved": "\"{{hotkey}}\" ist möglicherweise von Ihrer Desktop-Umgebung reserviert.",
       "rightModifierNeedsListener": "„{{hotkey}}“ kann auf diesem Desktop nicht verwendet werden, da seine Tastenkürzel eine normale Taste benötigen. Fügen Sie eine Taste hinzu, z. B. Control+Alt+Space.",
+      "dictationAutoEnterNeedsRegularKey": "Automatischer Enter-Diktier-Hotkey unterstützt keine Maustasten oder reinen Modifikator-Kombinationen wie Control+Super. Verwenden Sie stattdessen eine normale Taste (z. B. Control+Alt+Space), Globe oder eine rechte Taste wie Rechte Option.",
       "holdNeedsReleaseKey": "Halten zum Sprechen braucht eine Taste, deren Loslassen macOS erkennt: Globe, eine rechte Taste wie Rechte Option oder ein Kürzel mit Modifikator. Tippen funktioniert mit jeder Taste.",
       "holdNeedsRegularKey": "Um Halten zu nutzen, fügen Sie dem Kürzel eine normale Taste hinzu, z. B. Control+Alt+Space. Ihr Desktop kann das Halten reiner Modifikatortasten nicht melden.",
       "holdNeedsGnomePortal": "Um Halten zu nutzen, braucht GNOME das Portal für globale Tastenkürzel, das ab GNOME 48 enthalten ist. Tippen funktioniert auch ohne.",
@@ -2275,8 +2276,11 @@
         "autoPasteDescription": "Transkribierten Text nach dem Diktieren automatisch in die aktive App einfügen",
         "keepInClipboard": "Transkription in der Zwischenablage behalten",
         "keepInClipboardDescription": "Diktierten Text in der Zwischenablage behalten, damit Sie ihn bei Bedarf manuell einfügen können",
-        "enterCommand": "Sprachbefehl für die Eingabetaste",
-        "enterCommandDescription": "Sagen Sie diesen Satz am Ende eines Diktats, um die Eingabetaste zu drücken, statt den Satz einzufügen",
+        "enterCommand": "Eingabetaste nach dem Diktat drücken",
+        "enterCommandDescription": "Legen Sie fest, wann das Diktat die Eingabetaste im fokussierten Feld drücken soll, statt den Text einzufügen",
+        "enterCommandModeOff": "Aus",
+        "enterCommandModePhrase": "Auslösesatz",
+        "enterCommandModeAlways": "Immer",
         "enterCommandPhrase": "Auslösesatz",
         "enterCommandPhraseDescription": "Was gesagt werden muss, um die Eingabetaste auszulösen, z. B. „Enter drücken“"
       },
@@ -2427,6 +2431,10 @@
       "translationHotkey": {
         "title": "Übersetzungs-Hotkey",
         "description": "Diktiere in beliebiger Sprache — der eingefügte Text kommt übersetzt heraus"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "Hotkey für automatisches Enter",
+        "description": "Diktiere mit dieser Taste und Enter wird nach dem Einfügen automatisch gedrückt"
       }
     },
     "permissions": {

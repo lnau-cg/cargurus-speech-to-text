@@ -1249,6 +1249,36 @@ async function startApp() {
     hotkeyManager.notifyRestoreFailures(savedVoiceAgentKey, result);
   }
 
+  // Set up the auto-enter dictation hotkey (plain dictation, but Enter is
+  // pressed after paste regardless of the Enter-command setting). The
+  // callback below only drives the Electron globalShortcut path; Globe and
+  // right-side-modifier presses dispatch straight to
+  // sendToggleDictationAutoEnter() from the native handlers above, so this
+  // slot still never reaches a Linux-native (GNOME/Hyprland) backend.
+  const isDictationAutoEnterPress = createHotkeyRepeatGate();
+  const dictationAutoEnterHotkeyCallback = () => {
+    if (!isDictationAutoEnterPress()) return;
+    windowManager.sendToggleDictationAutoEnter();
+  };
+  windowManager._dictationAutoEnterHotkeyCallback = dictationAutoEnterHotkeyCallback;
+
+  const savedDictationAutoEnterKey = environmentManager.getDictationAutoEnterKey?.() || "";
+  if (savedDictationAutoEnterKey) {
+    const result = await hotkeyManager.registerSlot(
+      "dictationAutoEnter",
+      savedDictationAutoEnterKey,
+      dictationAutoEnterHotkeyCallback
+    );
+    if (!result.success) {
+      debugLogger.warn(
+        "Failed to restore auto-enter dictation hotkey",
+        { hotkey: savedDictationAutoEnterKey },
+        "hotkey"
+      );
+    }
+    hotkeyManager.notifyRestoreFailures(savedDictationAutoEnterKey, result);
+  }
+
   // Set up translation hotkey (dictation cleaned up and translated into the
   // configured target language before pasting)
   const isTranslationPress = createHotkeyRepeatGate();
@@ -1437,6 +1467,9 @@ async function startApp() {
     let globeKeyDownTime = 0;
     let globeKeyIsRecording = false;
     let globeLastStopTime = 0;
+    let autoEnterGlobeDownTime = 0;
+    let autoEnterGlobeIsRecording = false;
+    let autoEnterGlobeLastStopTime = 0;
     const MIN_HOLD_DURATION_MS = 150;
     const POST_STOP_COOLDOWN_MS = 300;
 
@@ -1496,13 +1529,46 @@ async function startApp() {
       const translationUsesGlobe = hotkeyManager
         .getSlotHotkeys("translation")
         .some(isGlobeLikeHotkey);
+      const dictationAutoEnterUsesGlobe = hotkeyManager
+        .getSlotHotkeys("dictationAutoEnter")
+        .some(isGlobeLikeHotkey);
       if (voiceAgentUsesGlobe) {
         windowManager.sendToggleVoiceAgent();
       }
       if (translationUsesGlobe) {
         windowManager.sendToggleTranslation();
       }
-      if (!voiceAgentUsesGlobe && !translationUsesGlobe && !dictationUsesGlobe) {
+      if (
+        dictationAutoEnterUsesGlobe &&
+        mainWindowLive &&
+        !windowManager.isDictationProcessing()
+      ) {
+        if (textEditMonitor) textEditMonitor.captureTargetPid();
+        if (windowManager.getActivationMode() === "push") {
+          const now = Date.now();
+          if (now - autoEnterGlobeLastStopTime >= POST_STOP_COOLDOWN_MS) {
+            windowManager.showDictationPanel();
+            windowManager.sendPrepareDictation();
+            const pressTime = now;
+            autoEnterGlobeDownTime = pressTime;
+            autoEnterGlobeIsRecording = false;
+            setTimeout(() => {
+              if (autoEnterGlobeDownTime === pressTime && !autoEnterGlobeIsRecording) {
+                autoEnterGlobeIsRecording = true;
+                windowManager.sendStartDictation({ dictationAutoEnterRequested: true });
+              }
+            }, MIN_HOLD_DURATION_MS);
+          }
+        } else {
+          windowManager.sendToggleDictationAutoEnter();
+        }
+      }
+      if (
+        !voiceAgentUsesGlobe &&
+        !translationUsesGlobe &&
+        !dictationAutoEnterUsesGlobe &&
+        !dictationUsesGlobe
+      ) {
         debugLogger?.debug("[Globe] Ignored — hotkey is not GLOBE", { currentHotkey });
       }
     });
@@ -1528,6 +1594,25 @@ async function startApp() {
             if (globeKeyIsRecording) {
               globeKeyIsRecording = false;
               debugLogger?.debug("[Globe] Stopping dictation (push release)");
+              windowManager.sendStopDictation();
+            } else {
+              windowManager.sendCancelDictationPreparation();
+              windowManager.hideDictationPanel();
+            }
+          }
+        }
+      }
+
+      if (hotkeyManager.getSlotHotkeys("dictationAutoEnter").some(isGlobeLikeHotkey)) {
+        if (windowManager.getActivationMode() === "push") {
+          if (autoEnterGlobeDownTime === 0 && !autoEnterGlobeIsRecording) {
+            // The press was ignored (dictation was processing); releasing it
+            // must not cancel preparation or hide the thinking pill.
+          } else {
+            autoEnterGlobeDownTime = 0;
+            autoEnterGlobeLastStopTime = Date.now();
+            if (autoEnterGlobeIsRecording) {
+              autoEnterGlobeIsRecording = false;
               windowManager.sendStopDictation();
             } else {
               windowManager.sendCancelDictationPreparation();
@@ -1574,6 +1659,10 @@ async function startApp() {
     let rightModIsRecording = false;
     let rightModLastStopTime = 0;
     let rightModActiveKey = null;
+    let autoEnterRightModDownTime = 0;
+    let autoEnterRightModIsRecording = false;
+    let autoEnterRightModLastStopTime = 0;
+    let autoEnterRightModActiveKey = null;
 
     globeKeyManager.on("right-modifier-down", async (modifier) => {
       // Check voice agent slot for right-modifier
@@ -1582,6 +1671,34 @@ async function startApp() {
       }
       if (hotkeyManager.slotHasHotkey("translation", modifier)) {
         windowManager.sendToggleTranslation();
+      }
+      if (
+        hotkeyManager.slotHasHotkey("dictationAutoEnter", modifier) &&
+        isLiveWindow(windowManager.mainWindow) &&
+        !windowManager.isDictationProcessing()
+      ) {
+        if (textEditMonitor) textEditMonitor.captureTargetPid();
+        if (windowManager.getActivationMode() === "push") {
+          if (!autoEnterRightModActiveKey || autoEnterRightModActiveKey === modifier) {
+            const now = Date.now();
+            if (now - autoEnterRightModLastStopTime >= POST_STOP_COOLDOWN_MS) {
+              windowManager.showDictationPanel();
+              windowManager.sendPrepareDictation();
+              const pressTime = now;
+              autoEnterRightModActiveKey = modifier;
+              autoEnterRightModDownTime = pressTime;
+              autoEnterRightModIsRecording = false;
+              setTimeout(() => {
+                if (autoEnterRightModDownTime === pressTime && !autoEnterRightModIsRecording) {
+                  autoEnterRightModIsRecording = true;
+                  windowManager.sendStartDictation({ dictationAutoEnterRequested: true });
+                }
+              }, MIN_HOLD_DURATION_MS);
+            }
+          }
+        } else {
+          windowManager.sendToggleDictationAutoEnter();
+        }
       }
 
       if (!hotkeyManager.slotHasHotkey("dictation", modifier)) return;
@@ -1636,6 +1753,29 @@ async function startApp() {
         }
       }
 
+      if (
+        hotkeyManager.slotHasHotkey("dictationAutoEnter", modifier) &&
+        isLiveWindow(windowManager.mainWindow) &&
+        windowManager.getActivationMode() === "push" &&
+        (!autoEnterRightModActiveKey || autoEnterRightModActiveKey === modifier)
+      ) {
+        if (autoEnterRightModDownTime === 0 && !autoEnterRightModIsRecording) {
+          // The press was ignored (dictation was processing); releasing it
+          // must not cancel preparation or hide the thinking pill.
+        } else {
+          autoEnterRightModActiveKey = null;
+          autoEnterRightModDownTime = 0;
+          autoEnterRightModLastStopTime = Date.now();
+          if (autoEnterRightModIsRecording) {
+            autoEnterRightModIsRecording = false;
+            windowManager.sendStopDictation();
+          } else {
+            windowManager.sendCancelDictationPreparation();
+            windowManager.hideDictationPanel();
+          }
+        }
+      }
+
       const rightModToBase = {
         RightCommand: "command",
         RightOption: "option",
@@ -1648,7 +1788,12 @@ async function startApp() {
       }
     });
 
-    const MAC_NATIVE_HOTKEY_SLOTS = ["dictation", "voiceAgent", "translation"];
+    const MAC_NATIVE_HOTKEY_SLOTS = [
+      "dictation",
+      "voiceAgent",
+      "translation",
+      "dictationAutoEnter",
+    ];
     const syncMacNativeHotkeyConfiguration = () => {
       globeKeyManager.setConfiguration(
         hotkeyManager.getMacNativeListenerConfig(MAC_NATIVE_HOTKEY_SLOTS)

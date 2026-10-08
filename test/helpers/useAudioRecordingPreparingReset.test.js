@@ -32,6 +32,9 @@ export default class FakeAudioManager {
   setTranslationRequested(value) {
     this.translationRequested = value;
   }
+  setDictationAutoEnterRequested(value) {
+    this.dictationAutoEnterRequested = value;
+  }
   shouldUseStreaming() {
     return false;
   }

@@ -1024,6 +1024,10 @@ class WindowManager {
     this._sendDictationToggle("toggle-translation", "translation");
   }
 
+  sendToggleDictationAutoEnter() {
+    this._sendDictationToggle("toggle-dictation-auto-enter", "dictation");
+  }
+
   // The tray's Ask assistant. Only the renderer can open the panel, and only it
   // knows the policy and recording state the pill menu gates the item on, so it
   // decides: nothing is shown or created here, and an accepted command surfaces
@@ -1035,7 +1039,7 @@ class WindowManager {
     this.mainWindow.webContents.send("open-assistant-panel");
   }
 
-  sendStartDictation() {
+  sendStartDictation({ dictationAutoEnterRequested = false } = {}) {
     if (!this._isOnboardingInputAllowed("dictation")) return;
     if (this._shouldBlockDictationInput("dictation")) {
       return;
@@ -1050,7 +1054,7 @@ class WindowManager {
       const targetPidPromise = this.textEditMonitor?.captureTargetPid?.();
       void this.selectionManager?.captureTarget?.();
       this.showDictationPanel({ reposition: true, targetPidPromise });
-      this.mainWindow.webContents.send("start-dictation");
+      this.mainWindow.webContents.send("start-dictation", { dictationAutoEnterRequested });
     }
   }
 
