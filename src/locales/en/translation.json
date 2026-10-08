@@ -4676,8 +4676,8 @@
   "commandSearch": {
     "allSpaces": "All spaces",
     "title": "Search",
-    "description": "Search across notes and transcripts",
-    "placeholder": "Search notes and transcripts…",
+    "description": "Search across notes",
+    "placeholder": "Search notes",
     "sections": {
       "notes": "Notes",
       "transcripts": "Transcripts",
