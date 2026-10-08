@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" já está registrada por outro aplicativo.",
       "osReserved": "\"{{hotkey}}\" pode estar reservada pelo seu ambiente de desktop.",
       "rightModifierNeedsListener": "\"{{hotkey}}\" não pode ser usada neste ambiente de trabalho, cujos atalhos precisam de uma tecla normal. Adicione uma tecla, como Control+Alt+Space.",
+      "dictationAutoEnterNeedsRegularKey": "O ditado com Enter automático não suporta botões do mouse nem combinações somente de modificadores como Control+Super. Em vez disso, use uma tecla normal (por exemplo, Control+Alt+Space), Globo ou uma tecla direita como Option direita.",
       "holdNeedsReleaseKey": "Segurar para falar precisa de uma tecla cuja soltura o macOS detecte: Globo, uma tecla direita como Option direita ou um atalho com modificador. Tocar funciona com qualquer tecla.",
       "holdNeedsRegularKey": "Para usar Segurar, adicione uma tecla normal ao atalho, como Control+Alt+Space. O ambiente de desktop não consegue detectar quando você segura apenas teclas modificadoras.",
       "holdNeedsGnomePortal": "Para usar Segurar, o GNOME precisa do portal de atalhos globais, incluído a partir do GNOME 48. Toque funciona sem ele.",
@@ -1958,7 +1959,14 @@
         "autoPaste": "Colagem automática",
         "autoPasteDescription": "Colar automaticamente o texto transcrito no aplicativo ativo ao finalizar o ditado",
         "keepInClipboard": "Manter transcrição na área de transferência",
-        "keepInClipboardDescription": "Manter o texto ditado na área de transferência para poder colar manualmente se necessário"
+        "keepInClipboardDescription": "Manter o texto ditado na área de transferência para poder colar manualmente se necessário",
+        "enterCommand": "Pressionar Enter após o ditado",
+        "enterCommandDescription": "Escolha quando o ditado deve pressionar Enter no campo focado em vez de colar o texto",
+        "enterCommandModeOff": "Desativado",
+        "enterCommandModePhrase": "Frase de ativação",
+        "enterCommandModeAlways": "Sempre",
+        "enterCommandPhrase": "Frase de ativação",
+        "enterCommandPhraseDescription": "O que dizer para acionar o Enter, por exemplo \"pressionar enter\""
       },
       "startup": {
         "launchAtLogin": "Iniciar ao fazer login",
@@ -2107,6 +2115,10 @@
       "translationHotkey": {
         "title": "Atalho de Tradução",
         "description": "Dite em qualquer idioma: o texto colado sai traduzido"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "Atalho de Enter Automático",
+        "description": "Dite com este atalho e o Enter é pressionado automaticamente após colar"
       }
     },
     "permissions": {

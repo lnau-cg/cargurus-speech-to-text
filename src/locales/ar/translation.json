@@ -3609,7 +3609,14 @@
         "autoPaste": "لصق تلقائي",
         "autoPasteDescription": "لصق النص المفرَّغ تلقائيًا في التطبيق النشط عند انتهاء الإملاء",
         "keepInClipboard": "الاحتفاظ بالنص المفرَّغ في الحافظة",
-        "keepInClipboardDescription": "احتفظ بالنص المُملى في الحافظة حتى تتمكن من لصقه يدويًا إذا لزم الأمر"
+        "keepInClipboardDescription": "احتفظ بالنص المُملى في الحافظة حتى تتمكن من لصقه يدويًا إذا لزم الأمر",
+        "enterCommand": "ضغط Enter بعد الإملاء",
+        "enterCommandDescription": "اختر الحالة التي يضغط فيها الإملاء على Enter في الحقل المحدد بدلاً من لصق النص",
+        "enterCommandModeOff": "إيقاف",
+        "enterCommandModePhrase": "عبارة التشغيل",
+        "enterCommandModeAlways": "دائمًا",
+        "enterCommandPhrase": "عبارة التشغيل",
+        "enterCommandPhraseDescription": "ما يجب قوله لتشغيل Enter، مثل \"اضغط إنتر\""
       },
       "startup": {
         "launchAtLogin": "بدء التشغيل عند تسجيل الدخول",
@@ -3758,6 +3765,10 @@
       "translationHotkey": {
         "title": "مفتاح اختصار الترجمة",
         "description": "قم بالإملاء بأي لغة — يخرج النص الملصق مترجمًا"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "مفتاح اختصار الإدخال التلقائي للإملاء",
+        "description": "أملِ باستخدام هذا الاختصار ليتم الضغط على Enter تلقائيًا بعد اللصق"
       }
     },
     "permissions": {
@@ -4149,6 +4160,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" مسجل بالفعل بواسطة تطبيق آخر.",
       "osReserved": "قد يكون \"{{hotkey}}\" محجوزًا بواسطة بيئة سطح المكتب لديك.",
       "rightModifierNeedsListener": "لا يمكن استخدام \"{{hotkey}}\" على سطح المكتب هذا، إذ تحتاج اختصاراته إلى مفتاح عادي. أضف مفتاحًا، مثل Control+Alt+Space.",
+      "dictationAutoEnterNeedsRegularKey": "لا يدعم الإملاء مع Enter التلقائي أزرار الفأرة أو تركيبات مفاتيح التعديل فقط مثل Control+Super. استخدم بدلاً من ذلك مفتاحًا عاديًا (مثل Control+Alt+Space)، أو Globe، أو مفتاحًا جانبيًا أيمن مثل Option الأيمن.",
       "holdNeedsReleaseKey": "يحتاج الضغط المستمر للتحدث إلى مفتاح يمكن لـ macOS أن يرصد تحريره: Globe، أو مفتاح جانبي أيمن مثل Option الأيمن، أو اختصار مع مفتاح تعديل. أما النقر فيعمل مع أي مفتاح.",
       "holdNeedsRegularKey": "لاستخدام «استمرار الضغط»، أضف مفتاحًا عاديًا إلى الاختصار، مثل Control+Alt+Space. لا يستطيع سطح المكتب لديك رصد الضغط المستمر على مفاتيح التعديل وحدها.",
       "holdNeedsGnomePortal": "لاستخدام «استمرار الضغط»، يحتاج GNOME إلى بوابة الاختصارات العامة المتوفرة في GNOME 48 والإصدارات الأحدث. أما «نقر» فيعمل بدونها.",

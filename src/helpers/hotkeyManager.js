@@ -25,6 +25,7 @@ const SLOT_LABEL_KEYS = {
   voiceAgent: "settingsPage.general.voiceAgentHotkey.title",
   translation: "settingsPage.general.translationHotkey.title",
   meeting: "settingsPage.general.meetingHotkey.title",
+  dictationAutoEnter: "settingsPage.general.dictationAutoEnterHotkey.title",
 };
 
 // KDE registration failure reasons — reuse existing i18n keys
@@ -231,6 +232,22 @@ class HotkeyManager extends EventEmitter {
     }
     // Native Linux backends bind only the primary hotkey.
     const hotkey = hotkeys[0];
+    // Mouse buttons and modifier-only chords resolve with accelerator: null
+    // and rely on a platform dispatch table (main.js's globeKeyManager
+    // mouse-button handlers on macOS, dispatchNativeKeyDown on Windows/Linux)
+    // to route the native listener's event to a slot. Those tables only know
+    // "dictation"/"voiceAgent"/"translation"/"meeting" — unlike Globe and
+    // right-side modifiers, dictationAutoEnter isn't wired into them, so one
+    // of these would register "successfully" and then never fire.
+    if (
+      slotName === "dictationAutoEnter" &&
+      (isMouseButtonHotkey(hotkey) || isModifierOnlyHotkey(hotkey))
+    ) {
+      return {
+        success: false,
+        error: i18nMain.t("hotkey.errors.dictationAutoEnterNeedsRegularKey", { hotkey }),
+      };
+    }
     // GNOME, KDE and Hyprland shortcuts need a regular key; only the evdev
     // listener, which those desktops do not use, can watch a lone right modifier.
     if (this.isUsingNativeShortcut() && isRightSideModifier(hotkey)) {

@@ -122,6 +122,7 @@
       "alreadyRegistered": "\"{{hotkey}}\" は別のアプリケーションで既に登録されています。",
       "osReserved": "\"{{hotkey}}\" はデスクトップ環境で予約されている可能性があります。",
       "rightModifierNeedsListener": "\"{{hotkey}}\" はこのデスクトップでは使用できません。ショートカットには通常のキーが必要です。Control+Alt+Space のようにキーを追加してください。",
+      "dictationAutoEnterNeedsRegularKey": "自動Enter送信ディクテーションは、マウスボタンや Control+Super のような修飾キーのみの組み合わせには対応していません。代わりに通常のキー（例: Control+Alt+Space）、Globe、または右 Option のような右側のキーを使用してください。",
       "holdNeedsReleaseKey": "ホールドして話すには、macOS が離したことを検知できるキーが必要です。Globe、右 Option のような右側のキー、または修飾キー付きのショートカットです。タップならどのキーでも使えます。",
       "holdNeedsRegularKey": "ホールドを使うには、Control+Alt+Space のようにショートカットに通常のキーを追加してください。デスクトップは修飾キーだけを押し続けていることを検知できません。",
       "holdNeedsGnomePortal": "ホールドを使うには、GNOME 48 以降に含まれるグローバルショートカットポータルが必要です。タップはポータルがなくても使えます。",
@@ -1979,7 +1980,14 @@
         "autoPaste": "自動貼り付け",
         "autoPasteDescription": "ディクテーション完了後、文字起こしテキストをアクティブなアプリに自動的に貼り付けます",
         "keepInClipboard": "文字起こしをクリップボードに保持",
-        "keepInClipboardDescription": "必要に応じて手動で貼り付けできるよう、音声入力テキストをクリップボードに保持します"
+        "keepInClipboardDescription": "必要に応じて手動で貼り付けできるよう、音声入力テキストをクリップボードに保持します",
+        "enterCommand": "ディクテーション後にEnterキーを押す",
+        "enterCommandDescription": "フォーカスされたフィールドでテキストを貼り付ける代わりにEnterキーを押すタイミングを選択します",
+        "enterCommandModeOff": "オフ",
+        "enterCommandModePhrase": "トリガーフレーズ",
+        "enterCommandModeAlways": "常に",
+        "enterCommandPhrase": "トリガーフレーズ",
+        "enterCommandPhraseDescription": "Enterキーを押すために言う言葉（例：「エンターキーを押す」）"
       },
       "startup": {
         "launchAtLogin": "ログイン時に起動",
@@ -2128,6 +2136,10 @@
       "translationHotkey": {
         "title": "翻訳ホットキー",
         "description": "どの言語で話しても、貼り付けられるテキストは翻訳済みになります"
+      },
+      "dictationAutoEnterHotkey": {
+        "title": "自動Enterディクテーションホットキー",
+        "description": "このホットキーでディクテーションすると、貼り付け後に自動的にEnterが押されます"
       }
     },
     "permissions": {
