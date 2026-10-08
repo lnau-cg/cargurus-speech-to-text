@@ -298,6 +298,7 @@ const BOOLEAN_SETTINGS = new Set([
   "isSignedIn",
   "autoPasteEnabled",
   "keepTranscriptionInClipboard",
+  "dictationEnterCommandEnabled",
   "dataRetentionEnabled",
   "saveDiscardedTranscriptions",
   "noteFilesEnabled",
@@ -920,6 +921,8 @@ export interface SettingsState
   showTranscriptionPreview: boolean;
   autoPasteEnabled: boolean;
   keepTranscriptionInClipboard: boolean;
+  dictationEnterCommandEnabled: boolean;
+  dictationEnterCommandPhrase: string;
   noteFilesEnabled: boolean;
   noteFilesPath: string;
 
@@ -1238,6 +1241,8 @@ export interface SettingsState
   setShowTranscriptionPreview: (value: boolean) => void;
   setAutoPasteEnabled: (value: boolean) => void;
   setKeepTranscriptionInClipboard: (value: boolean) => void;
+  setDictationEnterCommandEnabled: (value: boolean) => void;
+  setDictationEnterCommandPhrase: (value: string) => void;
   setNoteFilesEnabled: (value: boolean) => void;
   setNoteFilesPath: (value: string) => void;
   setIsSignedIn: (value: boolean) => void;
@@ -1707,6 +1712,8 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   showTranscriptionPreview: readBoolean("showTranscriptionPreview", false),
   autoPasteEnabled: readBoolean("autoPasteEnabled", true),
   keepTranscriptionInClipboard: readBoolean("keepTranscriptionInClipboard", false),
+  dictationEnterCommandEnabled: readBoolean("dictationEnterCommandEnabled", false),
+  dictationEnterCommandPhrase: readString("dictationEnterCommandPhrase", "hit enter"),
   noteFilesEnabled: readBoolean("noteFilesEnabled", false),
   noteFilesPath: readString("noteFilesPath", ""),
   isSignedIn: readBoolean("isSignedIn", false),
@@ -2555,6 +2562,8 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   setShowTranscriptionPreview: createBooleanSetter("showTranscriptionPreview"),
   setAutoPasteEnabled: createBooleanSetter("autoPasteEnabled"),
   setKeepTranscriptionInClipboard: createBooleanSetter("keepTranscriptionInClipboard"),
+  setDictationEnterCommandEnabled: createBooleanSetter("dictationEnterCommandEnabled"),
+  setDictationEnterCommandPhrase: createStringSetter("dictationEnterCommandPhrase"),
   setNoteFilesEnabled: createBooleanSetter("noteFilesEnabled"),
   setNoteFilesPath: createStringSetter("noteFilesPath"),
 

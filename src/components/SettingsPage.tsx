@@ -1214,6 +1214,10 @@ export default function SettingsPage({
     setAutoPasteEnabled,
     keepTranscriptionInClipboard,
     setKeepTranscriptionInClipboard,
+    dictationEnterCommandEnabled,
+    setDictationEnterCommandEnabled,
+    dictationEnterCommandPhrase,
+    setDictationEnterCommandPhrase,
     floatingIconAutoHide,
     setFloatingIconAutoHide,
     startMinimized,
@@ -2312,6 +2316,32 @@ export default function SettingsPage({
                     />
                   </SettingsRow>
                 </SettingsPanelRow>
+                <SettingsPanelRow>
+                  <SettingsRow
+                    label={t("settingsPage.general.clipboard.enterCommand")}
+                    description={t("settingsPage.general.clipboard.enterCommandDescription")}
+                  >
+                    <Toggle
+                      checked={dictationEnterCommandEnabled}
+                      onChange={setDictationEnterCommandEnabled}
+                    />
+                  </SettingsRow>
+                </SettingsPanelRow>
+                {dictationEnterCommandEnabled && (
+                  <SettingsPanelRow>
+                    <SettingsRow
+                      label={t("settingsPage.general.clipboard.enterCommandPhrase")}
+                      description={t("settingsPage.general.clipboard.enterCommandPhraseDescription")}
+                    >
+                      <Input
+                        dir="auto"
+                        type="text"
+                        value={dictationEnterCommandPhrase}
+                        onChange={(e) => setDictationEnterCommandPhrase(e.target.value)}
+                      />
+                    </SettingsRow>
+                  </SettingsPanelRow>
+                )}
               </SettingsPanel>
             </div>
 

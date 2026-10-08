@@ -1958,7 +1958,11 @@
         "autoPaste": "Colagem automática",
         "autoPasteDescription": "Colar automaticamente o texto transcrito no aplicativo ativo ao finalizar o ditado",
         "keepInClipboard": "Manter transcrição na área de transferência",
-        "keepInClipboardDescription": "Manter o texto ditado na área de transferência para poder colar manualmente se necessário"
+        "keepInClipboardDescription": "Manter o texto ditado na área de transferência para poder colar manualmente se necessário",
+        "enterCommand": "Comando de voz para pressionar Enter",
+        "enterCommandDescription": "Diga esta frase no final de uma ditado para pressionar Enter em vez de colar a frase",
+        "enterCommandPhrase": "Frase de ativação",
+        "enterCommandPhraseDescription": "O que dizer para acionar o Enter, por exemplo \"pressionar enter\""
       },
       "startup": {
         "launchAtLogin": "Iniciar ao fazer login",

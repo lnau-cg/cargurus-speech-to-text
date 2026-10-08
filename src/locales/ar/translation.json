@@ -3609,7 +3609,11 @@
         "autoPaste": "لصق تلقائي",
         "autoPasteDescription": "لصق النص المفرَّغ تلقائيًا في التطبيق النشط عند انتهاء الإملاء",
         "keepInClipboard": "الاحتفاظ بالنص المفرَّغ في الحافظة",
-        "keepInClipboardDescription": "احتفظ بالنص المُملى في الحافظة حتى تتمكن من لصقه يدويًا إذا لزم الأمر"
+        "keepInClipboardDescription": "احتفظ بالنص المُملى في الحافظة حتى تتمكن من لصقه يدويًا إذا لزم الأمر",
+        "enterCommand": "أمر صوتي لضغط Enter",
+        "enterCommandDescription": "قل هذه العبارة في نهاية الإملاء لضغط Enter بدلاً من لصق العبارة",
+        "enterCommandPhrase": "عبارة التشغيل",
+        "enterCommandPhraseDescription": "ما يجب قوله لتشغيل Enter، مثل \"اضغط إنتر\""
       },
       "startup": {
         "launchAtLogin": "بدء التشغيل عند تسجيل الدخول",

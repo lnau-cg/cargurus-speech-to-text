@@ -2274,7 +2274,11 @@
         "autoPaste": "Automatisches Einfügen",
         "autoPasteDescription": "Transkribierten Text nach dem Diktieren automatisch in die aktive App einfügen",
         "keepInClipboard": "Transkription in der Zwischenablage behalten",
-        "keepInClipboardDescription": "Diktierten Text in der Zwischenablage behalten, damit Sie ihn bei Bedarf manuell einfügen können"
+        "keepInClipboardDescription": "Diktierten Text in der Zwischenablage behalten, damit Sie ihn bei Bedarf manuell einfügen können",
+        "enterCommand": "Sprachbefehl für die Eingabetaste",
+        "enterCommandDescription": "Sagen Sie diesen Satz am Ende eines Diktats, um die Eingabetaste zu drücken, statt den Satz einzufügen",
+        "enterCommandPhrase": "Auslösesatz",
+        "enterCommandPhraseDescription": "Was gesagt werden muss, um die Eingabetaste auszulösen, z. B. „Enter drücken“"
       },
       "startup": {
         "launchAtLogin": "Beim Anmelden starten",

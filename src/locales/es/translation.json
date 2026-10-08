@@ -2032,7 +2032,11 @@
         "autoPaste": "Pegado automático",
         "autoPasteDescription": "Pegar automáticamente el texto transcrito en la aplicación activa al finalizar el dictado",
         "keepInClipboard": "Mantener transcripción en el portapapeles",
-        "keepInClipboardDescription": "Mantener el texto dictado en el portapapeles para poder pegarlo manualmente si es necesario"
+        "keepInClipboardDescription": "Mantener el texto dictado en el portapapeles para poder pegarlo manualmente si es necesario",
+        "enterCommand": "Comando de voz para pulsar Intro",
+        "enterCommandDescription": "Di esta frase al final de un dictado para pulsar Intro en lugar de pegar la frase",
+        "enterCommandPhrase": "Frase desencadenante",
+        "enterCommandPhraseDescription": "Qué decir para activar Intro, por ejemplo \"pulsar intro\""
       },
       "startup": {
         "launchAtLogin": "Abrir al iniciar sesión",

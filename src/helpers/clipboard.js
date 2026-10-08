@@ -1026,6 +1026,14 @@ class ClipboardManager {
         method = pasteResult?.method || "linux-tools";
       }
 
+      // The accessibility-fallback and permission-required paths above
+      // return/throw earlier, but Linux's modifiers-held guard (pasteLinux)
+      // returns pasted: false without throwing — check it explicitly so a
+      // dictated "hit enter" never fires Enter without a paste landing.
+      if (options.sendEnterAfterPaste && pasteResult?.pasted !== false) {
+        await this._sendEnterKey(platform);
+      }
+
       this.safeLog("✅ Paste operation complete", {
         platform,
         method,
@@ -1041,6 +1049,62 @@ class ClipboardManager {
         error: error.message,
       });
       throw error;
+    }
+  }
+
+  // Sends a single Enter keypress right after a successful paste, for the
+  // "say a trigger phrase to submit" dictation command. Always uses the same
+  // tool regardless of which tool pasted, since Enter is a plain, unmodified
+  // key that every injection tool supports the same way.
+  async _sendEnterKey(platform) {
+    try {
+      if (platform === "darwin") {
+        await new Promise((resolve, reject) => {
+          const proc = spawn("osascript", [
+            "-e",
+            'tell application "System Events" to key code 36',
+          ]);
+          proc.on("close", (code) =>
+            code === 0 ? resolve() : reject(new Error(`osascript Enter exited with code ${code}`))
+          );
+          proc.on("error", reject);
+        });
+      } else if (platform === "win32") {
+        await new Promise((resolve, reject) => {
+          const proc = spawn(
+            "powershell.exe",
+            [
+              "-NoProfile",
+              "-NonInteractive",
+              "-WindowStyle",
+              "Hidden",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-Command",
+              "[void][System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');[System.Windows.Forms.SendKeys]::SendWait('{ENTER}')",
+            ],
+            { windowsHide: true }
+          );
+          proc.on("close", (code) =>
+            code === 0 ? resolve() : reject(new Error(`PowerShell Enter exited with code ${code}`))
+          );
+          proc.on("error", reject);
+        });
+      } else if (this._isWayland() && this.commandExists("wtype")) {
+        await this._runLinuxPasteCommand("wtype", ["-k", "Return"], "wtype-enter");
+      } else if (this.commandExists("xdotool")) {
+        await this._runLinuxPasteCommand("xdotool", ["key", "Return"], "xdotool-enter");
+      } else if (this.commandExists("ydotool") && this._isYdotoolDaemonRunning()) {
+        await this._runLinuxPasteCommand("ydotool", ["key", "28:1", "28:0"], "ydotool-enter");
+      } else {
+        this.safeLog("⚠️ No key-injection tool available to send Enter after paste", { platform });
+        return;
+      }
+      this.safeLog("⌨️ Sent Enter after paste", { platform });
+    } catch (error) {
+      // Best-effort: the paste itself already succeeded, so a failed Enter
+      // leaves the pasted text in place rather than surfacing as a paste error.
+      this.safeLog("⚠️ Failed to send Enter after paste", { platform, error: error?.message });
     }
   }
 

@@ -1979,7 +1979,11 @@
         "autoPaste": "Incollaggio automatico",
         "autoPasteDescription": "Incolla automaticamente il testo trascritto nell'app attiva al termine della dettatura",
         "keepInClipboard": "Mantieni la trascrizione negli appunti",
-        "keepInClipboardDescription": "Mantieni il testo dettato negli appunti per poterlo incollare manualmente se necessario"
+        "keepInClipboardDescription": "Mantieni il testo dettato negli appunti per poterlo incollare manualmente se necessario",
+        "enterCommand": "Comando vocale per premere Invio",
+        "enterCommandDescription": "Pronuncia questa frase alla fine di una dettatura per premere Invio invece di incollare la frase",
+        "enterCommandPhrase": "Frase di attivazione",
+        "enterCommandPhraseDescription": "Cosa dire per attivare Invio, ad es. \"premi invio\""
       },
       "startup": {
         "launchAtLogin": "Avvia all'accesso",

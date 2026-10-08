@@ -5,6 +5,7 @@ import logger from "../utils/logger";
 import { playStartCue, playStopCue } from "../utils/dictationCues";
 import { getSettings } from "../stores/settingsStore";
 import { expandSnippets } from "../utils/snippets";
+import { stripDictationEnterCommand } from "../helpers/dictationEnterCommand";
 import { getRecordingErrorTitle, getRecordingErrorDescription } from "../utils/recordingErrors";
 import { providerErrorActions } from "../utils/describeProviderError";
 import { isAccessibilitySkipped } from "../utils/permissions";
@@ -638,6 +639,22 @@ export const useAudioRecording = (toast, options = {}) => {
             result.text = expandSnippets(result.text, getSettings().snippets);
           }
 
+          // A trailing "hit enter" (configurable) submits the focused field
+          // instead of pasting the phrase. Scoped to plain dictation: a selection
+          // edit replaces text in place (no field to submit) and an assistant
+          // command is routed to the panel, not pasted.
+          let sendEnterAfterPaste = false;
+          if (!result.assistantConversation && !result.selectionEdit?.sessionId) {
+            const { dictationEnterCommandEnabled, dictationEnterCommandPhrase } = getSettings();
+            if (dictationEnterCommandEnabled) {
+              const stripped = stripDictationEnterCommand(result.text, dictationEnterCommandPhrase);
+              if (stripped.shouldPressEnter) {
+                result.text = stripped.text;
+                sendEnterAfterPaste = true;
+              }
+            }
+          }
+
           setTranscript(result.text);
           if (result.assistantConversation) {
             window.electronAPI?.hideDictationPreview?.();
@@ -756,6 +773,7 @@ export const useAudioRecording = (toast, options = {}) => {
           const pasteOptions = {
             restoreClipboard: !keepTranscriptionInClipboard,
             allowClipboardFallback: isAccessibilitySkipped(),
+            ...(sendEnterAfterPaste ? { sendEnterAfterPaste: true } : {}),
           };
 
           const whilePasting = async (attempt) => {

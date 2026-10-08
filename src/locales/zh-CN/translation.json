@@ -1979,7 +1979,11 @@
         "autoPaste": "自动粘贴",
         "autoPasteDescription": "听写结束后自动将转录文本粘贴到当前活动的应用中",
         "keepInClipboard": "将转录内容保留在剪贴板",
-        "keepInClipboardDescription": "将听写文本保留在剪贴板中，以便在需要时手动粘贴"
+        "keepInClipboardDescription": "将听写文本保留在剪贴板中，以便在需要时手动粘贴",
+        "enterCommand": "按下回车键的语音命令",
+        "enterCommandDescription": "在听写结尾说出此短语，将按下回车键而不是粘贴该短语",
+        "enterCommandPhrase": "触发短语",
+        "enterCommandPhraseDescription": "触发回车键要说的话，例如“按回车”"
       },
       "startup": {
         "launchAtLogin": "登录时启动",

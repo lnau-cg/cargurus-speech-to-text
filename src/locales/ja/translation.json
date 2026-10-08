@@ -1979,7 +1979,11 @@
         "autoPaste": "自動貼り付け",
         "autoPasteDescription": "ディクテーション完了後、文字起こしテキストをアクティブなアプリに自動的に貼り付けます",
         "keepInClipboard": "文字起こしをクリップボードに保持",
-        "keepInClipboardDescription": "必要に応じて手動で貼り付けできるよう、音声入力テキストをクリップボードに保持します"
+        "keepInClipboardDescription": "必要に応じて手動で貼り付けできるよう、音声入力テキストをクリップボードに保持します",
+        "enterCommand": "Enterキーを押す音声コマンド",
+        "enterCommandDescription": "ディクテーションの最後にこのフレーズを言うと、フレーズを貼り付ける代わりにEnterキーが押されます",
+        "enterCommandPhrase": "トリガーフレーズ",
+        "enterCommandPhraseDescription": "Enterキーを押すために言う言葉（例：「エンターキーを押す」）"
       },
       "startup": {
         "launchAtLogin": "ログイン時に起動",

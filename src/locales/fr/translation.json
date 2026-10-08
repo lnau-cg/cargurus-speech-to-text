@@ -2274,7 +2274,11 @@
         "autoPaste": "Collage automatique",
         "autoPasteDescription": "Coller automatiquement le texte transcrit dans l'application active à la fin de la dictée",
         "keepInClipboard": "Garder la transcription dans le presse-papiers",
-        "keepInClipboardDescription": "Conserver le texte dicté dans le presse-papiers pour pouvoir le coller manuellement si nécessaire"
+        "keepInClipboardDescription": "Conserver le texte dicté dans le presse-papiers pour pouvoir le coller manuellement si nécessaire",
+        "enterCommand": "Commande vocale pour appuyer sur Entrée",
+        "enterCommandDescription": "Dites cette phrase à la fin d'une dictée pour appuyer sur Entrée au lieu de coller la phrase",
+        "enterCommandPhrase": "Phrase de déclenchement",
+        "enterCommandPhraseDescription": "Quoi dire pour déclencher Entrée, par exemple « appuie sur entrée »"
       },
       "startup": {
         "launchAtLogin": "Lancer au démarrage",
